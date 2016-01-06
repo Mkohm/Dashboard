@@ -14,7 +14,11 @@ def getWakeuptimeFromGoogleCalendar():
     global happening
 
     #gets file and puts every line in the file into a list
+
+    ##################put your link in here##################
     site = urllib.request.urlopen("https://calendar.google.com/calendar/ical/marius.kohmann%40gmail.com/public/basic.ics")
+
+    
     html = site.read()
     html = html.decode()
     html = html.replace("\r", "")
