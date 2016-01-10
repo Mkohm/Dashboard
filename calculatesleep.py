@@ -1,4 +1,3 @@
-import time
 from datetime import datetime
 import urllib.request
 
@@ -9,6 +8,8 @@ def findDifference(year, month, day, hour, minute):
     diff = date-now
 
     return diff
+
+
 
 def getWakeuptimeFromGoogleCalendar():
     global happening
@@ -110,8 +111,12 @@ def getWakeuptimeFromGoogleCalendar():
 
     weekdays = ["MO", "TU", "WE", "TH", "FR", "SA", "SU"]
     currentDay = datetime.now().weekday()
-    tomorrowDay = currentDay+1
-    tomorrowDay = weekdays[tomorrowDay]
+    tomorrowWeekday = weekdays[(currentDay+1)%(len(weekdays))]
+
+    tomorrowYear = datetime.now().year
+    tomorrowMonth = datetime.now().month
+    tomorrowDay = datetime.now().day
+
 
 
     #find all occurences on a day and then choose the earliest one
@@ -123,11 +128,11 @@ def getWakeuptimeFromGoogleCalendar():
         ptime = possible2[i][0]
         ptime = ptime[ptime.find(":")+1:]
         dato = datetime(year=int(ptime[0:4]), month=int(ptime[4:6]), day=int(ptime[6:8]))
-        dato = dato.weekday()
-        dato = weekdays[dato]
 
 
-        if tomorrowDay in possible2[i][2] or tomorrowDay in dato:
+        #sjekker om det er en gjentakende hendelse eller om det finnes en enkeltevent som er i morgen
+        if tomorrowWeekday in possible2[i][2] or (tomorrowYear == dato.year and tomorrowMonth == dato.month and tomorrowDay == dato.day):
+
             possibletime = possible2[i][1]
             possibletime = possibletime[possibletime.find(":")+1:]
             hour = int(possibletime[9:11])
@@ -137,12 +142,16 @@ def getWakeuptimeFromGoogleCalendar():
 
             possibletimes.append([hour, minute])
 
-            if tomorrowDay in possible2[i][2]:
+            if tomorrowWeekday in possible2[i][2]:
                 happening = possible2[i][4]
-            if tomorrowDay in dato:
+                #break
+            if tomorrowWeekday in dato:
                 happening = possible2[i][3]
+                #break
+
 
     print(possibletimes)
+
 
     possibletimes.sort()
     if len(possibletimes) == 0:
@@ -160,6 +169,7 @@ def prntime(ms):
 
     return int(d),int(h),int(m),int(s)
 
+#formats the input-list with zeros
 def addzero(time):
     newtime = []
     for i in range(0, len(time)):
@@ -176,15 +186,13 @@ def returnHappening():
     return happening
 
 
-def calculateBedTime(wakeuphour, wakeupminute):
-    #print(wakeuphour, wakeupminute)
-    #replace currenthour currentminute with wakeuptime
+def calculateBedTime(wakeuphour, wakeupminute, prepareminutes):
 
 
     currentHourMilli = wakeuphour*3600000
     currentMinuteMilli = wakeupminute*60000
     currentTotalMilli = currentHourMilli+currentMinuteMilli
-    currentTotalMilli = currentTotalMilli - 270*60000
+    currentTotalMilli = currentTotalMilli - 270*60000 - (60000*prepareminutes)
 
 
     d, h, m, s = prntime(currentTotalMilli)
