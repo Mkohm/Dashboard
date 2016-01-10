@@ -137,10 +137,9 @@ def getWakeuptimeFromGoogleCalendar():
         #sjekker om det er en gjentakende hendelse eller om det finnes en enkeltevent som er i morgen
         if tomorrowWeekday in possible2[i][2] or (tomorrowYear == dato.year and tomorrowMonth == dato.month and tomorrowDay == dato.day):
 
-            possibletime = possible2[i][1]
+            possibletime = possible2[i][0]
             possibletime = possibletime[possibletime.find(":")+1:]
             hour = int(possibletime[9:11])
-
             minute = int(possibletime[11:13])
 
 
@@ -149,12 +148,10 @@ def getWakeuptimeFromGoogleCalendar():
             if tomorrowWeekday in possible2[i][2]:
                 happening = possible2[i][4]
                 #break
-            if tomorrowWeekday in dato:
+            if tomorrowYear == dato.year and tomorrowMonth == dato.month and tomorrowDay == dato.day:
                 happening = possible2[i][3]
                 #break
 
-
-    print(possibletimes)
 
 
     possibletimes.sort()
@@ -191,6 +188,7 @@ def returnHappening():
 
 
 def calculateBedTime(wakeuphour, wakeupminute, prepareminutes):
+    print(wakeuphour, wakeupminute)
 
 
     currentHourMilli = wakeuphour*3600000
