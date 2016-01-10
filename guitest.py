@@ -28,6 +28,8 @@ def soveLengeEllerLeggeseg():
         res1, res2, res3, res4 = calculatesleep.calculateBedTime(time[0], time[1], prepareminutes=60)
         bedtime = "Du må legge deg: " + res4[0] + "." + res4[1] + ", " + res3[0] + "." + res3[1] + ", " + res2[0] + "." + res2[1] + " eller " + res1[0] + "." + res1[1] + " - " + happening + " klokken: "
 
+
+
 def createGui():
     root = Tk()
 
@@ -37,10 +39,10 @@ def createGui():
     temperatureFrame = Frame(root)
 
 
-    quoteFrame.pack(side=BOTTOM, expand=True, fill='both')
+    quoteFrame.pack(side=BOTTOM, fill=BOTH)
     sleepCalendarFrame.pack(side=LEFT, fill=BOTH)
-    sleepNowFrame.pack(side=LEFT, fill=BOTH)
-    temperatureFrame.pack(side=LEFT, fill=BOTH)
+    sleepNowFrame.pack(side=RIGHT, fill=BOTH)
+    temperatureFrame.pack(side=TOP, fill=BOTH)
 
 
 
