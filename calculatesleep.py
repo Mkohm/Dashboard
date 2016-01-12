@@ -9,6 +9,54 @@ def findDifference(year, month, day, hour, minute):
 
     return diff
 
+def getFile(url):
+        site = urllib.request.urlopen(url)
+
+
+        icsdata = site.read()
+        icsdata = icsdata.decode()
+        icsdata = icsdata.replace("\r", "")
+        htmllist = icsdata.split("\n")
+
+        return htmllist
+
+#string must be on the format DTEND;TZID=Europe/Oslo:20160113T160000
+def getTimeFromString(timestring):
+
+    time = timestring[timestring.find(":")+1:]
+
+    year = int(time[0:4])
+    month = int(time[4:6])
+    day = int(time[6:8])
+    hour = int(time[9:11])
+    minute = int(time[11:13])
+
+
+    return year, month, day, hour, minute
+
+#single events got len(4)
+def isSingleEvent(event):
+    if len(event) == 4:
+        return True
+    else:
+        return False
+
+#multi events got len(5)
+def isMultiEvent(event):
+    if len(event) == 5:
+        return True
+    else:
+        return False
+
+#returns list with only weekdays in strings on format "MO, TU..."
+def stripRRULE(string):
+    weekdays = []
+
+    weekdays.append(string[string.find("BYDAY")+6:])
+    print(weekdays)
+    return weekdays
+
+stripRRULE("RRULE:FREQ=WEEKLY;BYDAY=WE")
 
 
 def getWakeuptimeFromGoogleCalendar():
@@ -17,17 +65,7 @@ def getWakeuptimeFromGoogleCalendar():
     #gets file and puts every line in the file into a list
 
     ##################put your link in here##################
-    try:
-        site = urllib.request.urlopen("https://calendar.google.com/calendar/ical/marius.kohmann%40gmail.com/public/basic.ics")
-
-
-        icsdata = site.read()
-        icsdata = icsdata.decode()
-        icsdata = icsdata.replace("\r", "")
-        htmllist = icsdata.split("\n")
-    except:
-        print("Something went wrong.")
-        return 0
+    htmllist = getFile("https://calendar.google.com/calendar/ical/marius.kohmann%40gmail.com/public/basic.ics")
 
 
     #making a 2d list with every event in the calendar, including only the necessary info
@@ -65,17 +103,8 @@ def getWakeuptimeFromGoogleCalendar():
     for i in range(0, len(events)):
         #finner forskjell mellom dagens dato og når eventen ble starta, skal være med i listen om datoen ikke har vært enda
         try:
-            time = events[i][0]
-            time = time[time.find(":")+1:]
 
-
-            year = int(time[0:4])
-            month = int(time[4:6])
-            day = int(time[6:8])
-            hour = int(time[9:11])
-            minute = int(time[11:13])
-
-            #print(time, year, month, day, hour, minute)
+            year, month, day, hour, minute = getTimeFromString(events[i][0])
 
             diff = findDifference(year, month, day, hour, minute)
 
@@ -93,13 +122,7 @@ def getWakeuptimeFromGoogleCalendar():
         if "UNTIL=" in time2:
 
             time2 = time2[time2.find("UNTIL=")+6:]
-
-
-            year2 = int(time2[0:4])
-            month2 = int(time2[4:6])
-            day2 = int(time2[6:8])
-            hour2 = int(time2[9:11])
-            minute2 = int(time2[11:13])
+            year2, month2, day2, hour2, minute2 = getTimeFromString(time2)
 
             #print(time2, year2, month2, day2, hour2, minute2)
             diff2 = findDifference(year2, month2, day2, hour2, minute2)
@@ -113,51 +136,54 @@ def getWakeuptimeFromGoogleCalendar():
 
     print(possible2)
 
+
+
     weekdays = ["MO", "TU", "WE", "TH", "FR", "SA", "SU"]
+
     currentDay = datetime.now().weekday()
+
+    #day tomorrow
     tomorrowWeekday = weekdays[(currentDay+1)%(len(weekdays))]
+
 
     tomorrowYear = datetime.now().year
     tomorrowMonth = datetime.now().month
     tomorrowDay = datetime.now().day+1
+    print(tomorrowYear, tomorrowMonth, tomorrowDay)
+    print(tomorrowWeekday, "ukedag")
 
 
 
     #find all occurences on a day and then choose the earliest one
-    #finner enten datoen i RRULE eller at startdatoen er samme dag.
+    #finner enten ukedagen i RRULE eller at startdatoen er samme dag.
     possibletimes = []
     happening = ""
     for i in range(0, len(possible2)):
 
-        ptime = possible2[i][0]
-        ptime = ptime[ptime.find(":")+1:]
-        dato = datetime(year=int(ptime[0:4]), month=int(ptime[4:6]), day=int(ptime[6:8]))
 
 
-        #sjekker om det er en gjentakende hendelse eller om det finnes en enkeltevent som er i morgen
-        if tomorrowWeekday in possible2[i][2] or (tomorrowYear == dato.year and tomorrowMonth == dato.month and tomorrowDay == dato.day):
-
-            possibletime = possible2[i][0]
-            possibletime = possibletime[possibletime.find(":")+1:]
-            hour = int(possibletime[9:11])
-            minute = int(possibletime[11:13])
+        year, month, day, hour, minute = getTimeFromString(possible2[i][0])
+        dato = datetime(year, month, day)
 
 
-            possibletimes.append([hour, minute])
+        if isMultiEvent(possible2[i]):
+            #check if RRULE contains tomorrows weekday
+            days = stripRRULE(possible2[i][2])
+            if tomorrowWeekday in days:
+                possibletimes.append([hour, minute, possible2[i][4]])
 
-            if tomorrowWeekday in possible2[i][2]:
-                happening = possible2[i][4]
-                #break
+
+        if isSingleEvent(possible2[i]):
+            #check if event is tomorrow
             if tomorrowYear == dato.year and tomorrowMonth == dato.month and tomorrowDay == dato.day:
-                happening = possible2[i][3]
-                #break
+                possibletimes.append([hour, minute, possible2[i][3]])
 
 
 
     possibletimes.sort()
     print(possibletimes)
     if len(possibletimes) == 0:
-        print("ingenting")
+        print("ingenting: kan sove lenge")
         return 0
 
     return possibletimes[0]

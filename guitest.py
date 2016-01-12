@@ -24,7 +24,7 @@ def soveLengeEllerLeggeseg():
         bedtime = "Du kan sove lenge."
     else:
         res1, res2, res3, res4 = calculatesleep.calculateBedTime(time[0], time[1], prepareminutes=60)
-        bedtime = "Du må legge deg: " + res4[0] + "." + res4[1] + ", " + res3[0] + "." + res3[1] + ", " + res2[0] + "." + res2[1] + " eller " + res1[0] + "." + res1[1] + " - " + happening + " klokken: "
+        bedtime = "Du må legge deg: " + res4[0] + "." + res4[1] + ", " + res3[0] + "." + res3[1] + ", " + res2[0] + "." + res2[1] + " eller " + res1[0] + "." + res1[1] + " - " + time[2].replace("SUMMARY:", "") + " klokken " + str(time[0]) + ":" + str(time[1]) + "."
 
 
 
@@ -33,14 +33,14 @@ def createGui():
     root = Tk.Tk()
 
 
-    sleep = Tk.Label(root, bg="#EC663C",font="Arial 25 bold", fg="white", height="5", text=bedtime, width="80")
-    sleep.grid(row=0,column=0)
+    sleep = Tk.Label(root, bg="#EC663C",font="Arial 20 bold", fg="white", height="5", text=bedtime, width="100")
+    sleep.grid(row=0)
 
-    temperature = Tk.Label(root, bg="#EC663C",font="Arial 25 bold", fg="white", height="5", width="20", text="21 grader")
-    temperature.grid(row=0,column=1)
+    temperature = Tk.Label(root, bg="#EC663C",font="Arial 25 bold", fg="white", height="5", text="21 grader")
+    temperature.grid(row=1)
 
-    quoteText = Tk.Label(root, bg="#EC663C",font="Arial 25 bold", fg="white", height="5", width="100",text=quote)
-    quoteText.grid(columnspan=2)
+    quoteText = Tk.Label(root, bg="#EC663C",font="Arial 25 bold", fg="white", height="5",text=quote)
+    quoteText.grid(row=2)
 
     root.mainloop()
 
