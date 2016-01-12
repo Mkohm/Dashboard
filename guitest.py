@@ -1,4 +1,4 @@
-from tkinter import *
+import tkinter as Tk
 import calculatesleep
 import broscience
 import calculateIfBedNow
@@ -10,8 +10,6 @@ results = []
 
 def findTimeBeforeMidnightElseFindTimeToday():
     return time
-
-
 
 def findHappening():
     global happening
@@ -31,39 +29,18 @@ def soveLengeEllerLeggeseg():
 
 
 def createGui():
-    root = Tk()
 
-    sleepCalendarFrame = Frame(root)
-    sleepNowFrame = Frame(root)
-    quoteFrame = Frame(root)
-    temperatureFrame = Frame(root)
+    root = Tk.Tk()
 
 
-    quoteFrame.pack(side=BOTTOM, fill=BOTH)
-    sleepCalendarFrame.pack(side=LEFT, fill=BOTH)
-    sleepNowFrame.pack(side=RIGHT, fill=BOTH)
-    temperatureFrame.pack(side=TOP, fill=BOTH)
+    sleep = Tk.Label(root, bg="#EC663C",font="Arial 25 bold", fg="white", height="5", text=bedtime, width="80")
+    sleep.grid(row=0,column=0)
 
+    temperature = Tk.Label(root, bg="#EC663C",font="Arial 25 bold", fg="white", height="5", width="20", text="21 grader")
+    temperature.grid(row=0,column=1)
 
-
-    sleep = Text(sleepCalendarFrame, bg="#EC663C",font="Arial 25 bold", fg="white", height="20")
-    sleep.insert(END, bedtime)
-    sleep.pack()
-
-    sleepNow = Text(sleepNowFrame, bg="#EC663C",font="Arial 25 bold", fg="white", height="20")
-    sleepNow.insert(END, results)
-    sleepNow.pack()
-
-
-    temperature = Text(temperatureFrame, bg="#EC663C",font="Arial 25 bold", fg="white", height="20")
-    #get temperature
-    temperature.insert(END, "21℃tndhaentdaeonuthdaonetuhd")
-    temperature.pack()
-
-
-    quoteText = Text(quoteFrame, bg="#47BBB3",font="Arial 25 bold", fg="white", height="5")
-    quoteText.insert(END,quote)
-    quoteText.pack()
+    quoteText = Tk.Label(root, bg="#EC663C",font="Arial 25 bold", fg="white", height="5", width="100",text=quote)
+    quoteText.grid(columnspan=2)
 
     root.mainloop()
 

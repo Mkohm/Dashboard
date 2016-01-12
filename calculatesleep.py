@@ -21,10 +21,10 @@ def getWakeuptimeFromGoogleCalendar():
         site = urllib.request.urlopen("https://calendar.google.com/calendar/ical/marius.kohmann%40gmail.com/public/basic.ics")
 
 
-        html = site.read()
-        html = html.decode()
-        html = html.replace("\r", "")
-        htmllist = html.split("\n")
+        icsdata = site.read()
+        icsdata = icsdata.decode()
+        icsdata = icsdata.replace("\r", "")
+        htmllist = icsdata.split("\n")
     except:
         print("Something went wrong.")
         return 0
@@ -119,16 +119,16 @@ def getWakeuptimeFromGoogleCalendar():
 
     tomorrowYear = datetime.now().year
     tomorrowMonth = datetime.now().month
-    tomorrowDay = datetime.now().day
+    tomorrowDay = datetime.now().day+1
 
 
 
     #find all occurences on a day and then choose the earliest one
     #finner enten datoen i RRULE eller at startdatoen er samme dag.
     possibletimes = []
+    happening = ""
     for i in range(0, len(possible2)):
 
-        happening = ""
         ptime = possible2[i][0]
         ptime = ptime[ptime.find(":")+1:]
         dato = datetime(year=int(ptime[0:4]), month=int(ptime[4:6]), day=int(ptime[6:8]))
@@ -155,6 +155,7 @@ def getWakeuptimeFromGoogleCalendar():
 
 
     possibletimes.sort()
+    print(possibletimes)
     if len(possibletimes) == 0:
         print("ingenting")
         return 0
