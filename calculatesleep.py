@@ -53,7 +53,6 @@ def stripRRULE(string):
     weekdays = []
 
     weekdays.append(string[string.find("BYDAY")+6:])
-    print(weekdays)
     return weekdays
 
 stripRRULE("RRULE:FREQ=WEEKLY;BYDAY=WE")
@@ -181,7 +180,6 @@ def getWakeuptimeFromGoogleCalendar():
 
 
     possibletimes.sort()
-    print(possibletimes)
     if len(possibletimes) == 0:
         print("ingenting: kan sove lenge")
         return 0
